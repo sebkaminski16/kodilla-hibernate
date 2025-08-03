@@ -1,5 +1,6 @@
 package com.kodilla.hibernate.task;
 
+import com.kodilla.hibernate.tasklist.TaskList;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,10 +10,29 @@ import java.util.Date;
 @Table(name = "TASKS")
 public class Task {
 
+    @Id
+    @NotNull
+    @GeneratedValue
+    @Column(name = "ID", unique=true)
     private int id;
+
+    @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "CREATED")
+    @NotNull
     private Date created;
+
+    @Column(name = "DURATION")
     private int duration;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "TASKS_FINANCIALS_ID")
+    private TaskFinancialDetails taskFinancialDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "TASKLISTS_ID")
+    private TaskList taskList;
 
     public Task() {
     }
@@ -23,43 +43,35 @@ public class Task {
         this.duration = duration;
     }
 
-    @Id
-    @NotNull
-    @GeneratedValue
-    @Column(name = "ID", unique=true)
     public int getId() {
         return id;
     }
 
-    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
 
-    @Column(name = "CREATED")
-    @NotNull
     public Date getCreated() {
         return created;
     }
 
-    @Column(name = "DURATION")
     public int getDuration() {
         return duration;
     }
 
-    private void setId(int id) {
-        this.id = id;
+    public TaskFinancialDetails getTaskFinancialDetails() {
+        return taskFinancialDetails;
     }
 
-    private void setDescription(String description) {
-        this.description = description;
+    public void setTaskFinancialDetails(TaskFinancialDetails taskFinancialDetails) {
+        this.taskFinancialDetails = taskFinancialDetails;
     }
 
-    private void setCreated(Date created) {
-        this.created = created;
+    public TaskList getTaskList() {
+        return taskList;
     }
 
-    private void setDuration(int duration) {
-        this.duration = duration;
+    public void setTaskList(TaskList taskList) {
+        this.taskList = taskList;
     }
 }
