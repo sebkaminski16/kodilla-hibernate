@@ -3,10 +3,12 @@ package com.kodilla.hibernate.invoice.dao;
 import com.kodilla.hibernate.invoice.Invoice;
 import com.kodilla.hibernate.invoice.Item;
 import com.kodilla.hibernate.invoice.Product;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 
@@ -20,6 +22,7 @@ public class InvoiceDaoTestSuite {
     private ProductDao productDao;
 
     @Test
+    @DisplayName("Saving an invoice into the database")
     void testInvoiceDaoSave() {
 
         //arrang
@@ -48,7 +51,7 @@ public class InvoiceDaoTestSuite {
         int id = invoice.getId();
 
         //assert
-        Assertions.assertNotEquals(0, id);
+        assertNotEquals(0, id);
 
         //clean
         invoiceDao.deleteById(id);
