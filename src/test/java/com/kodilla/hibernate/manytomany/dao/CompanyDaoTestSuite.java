@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -13,6 +15,9 @@ class CompanyDaoTestSuite {
 
     @Autowired
     private CompanyDao companyDao;
+
+    @Autowired
+    private EmployeeDao employeeDao;
 
     @Test
     void testSaveManyToMany() {
@@ -51,12 +56,58 @@ class CompanyDaoTestSuite {
         assertNotEquals(0, greyMatterId);
 
         //CleanUp
-        //try {
-        //    companyDao.deleteById(softwareMachineId);
-        //    companyDao.deleteById(dataMaestersId);
-        //    companyDao.deleteById(greyMatterId);
-        //} catch (Exception e) {
-        //    //do nothing
-        //}
+        try {
+            companyDao.deleteById(softwareMachineId);
+            companyDao.deleteById(dataMaestersId);
+            companyDao.deleteById(greyMatterId);
+        } catch (Exception e) {
+            //do nothing
+        }
+    }
+
+    @Test
+    void testNamedQueries() {
+        //arrange
+        Employee worker1 = new Employee("Jan", "Kowalski");
+        Employee worker2 = new Employee("Robert", "Nowak");
+
+        Company company1 = new Company("Microsoft");
+        Company company2 = new Company("Apple");
+        Company company3 = new Company("MicrophonesCompany");
+
+        company1.getEmployees().add(worker1);
+        company2.getEmployees().add(worker1);
+        company2.getEmployees().add(worker2);
+        company3.getEmployees().add(worker2);
+
+        worker1.getCompanies().add(company1);
+        worker1.getCompanies().add(company2);
+        worker2.getCompanies().add(company2);
+        worker2.getCompanies().add(company3);
+
+        companyDao.save(company1);
+        int company1Id = company1.getId();
+        companyDao.save(company2);
+        int company2Id = company2.getId();
+        companyDao.save(company3);
+        int company3Id = company3.getId();
+
+        //act
+        List<Company> companiesFound = companyDao
+                .retrieveCompaniesWithNameThatContainsThreeGivenCharacters("Mic");
+        List<Employee> employeesFound = employeeDao.retrieveEmployeesWithLastnameEqualTo("Nowak");
+
+        //asssert
+        assertEquals(2, companiesFound.size());
+        assertEquals(1, employeesFound.size());
+
+        //clean
+        try {
+            companyDao.deleteById(company1Id);
+            companyDao.deleteById(company2Id);
+            companyDao.deleteById(company3Id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
